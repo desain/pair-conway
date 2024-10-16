@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const CELL_SIZE = 100;
+const CELL_SIZE = 50;
 const CELL_COLOR = '#000000';
 const LINE_WIDTH = 1;
 const LINE_COLOR = '#CCCCCC';
