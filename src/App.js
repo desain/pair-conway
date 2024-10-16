@@ -2,44 +2,8 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import Grid from './Grid';
 
-const CELL_SIZE = 100;
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 10;
-const LINE_WIDTH = 1;
-
-/**
- * Draws a grid (array of array of booleans) on the canvas.
- */
-function drawGrid(ctx, grid) {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-  // draw grid lines
-  ctx.strokeStyle = '#FFFFFF'
-  ctx.lineWidth = LINE_WIDTH
-  // vertical
-  for (let i = 0; i <= GRID_WIDTH; i++) {
-    ctx.beginPath()
-    ctx.moveTo(i * CELL_SIZE, 0)
-    ctx.lineTo(i * CELL_SIZE, GRID_HEIGHT * CELL_SIZE)
-    ctx.stroke()
-  }
-  // horizontal
-  for (let j = 0; j <= GRID_HEIGHT; j++) {
-    ctx.beginPath()
-    ctx.moveTo(0, j * CELL_SIZE)
-    ctx.lineTo(GRID_WIDTH * CELL_SIZE, j * CELL_SIZE)
-    ctx.stroke()
-  }
-
-  // draw cells
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      if (grid[i][j]) {
-        ctx.fillStyle = '#000000'
-        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE)
-      }
-    }
-  }
-}
 
 function countNeighbors(grid, i, j) {
   let count = 0
@@ -105,20 +69,11 @@ function App() {
     return () => clearTimeout(timer)
   }, [grid, playing])
 
-  const draw = (ctx, frameCount) => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    drawGrid(ctx, [
-      [true, false, true],
-      [false, true, false],
-      [true, false, true]
-    ])
-  }
-
   return (
     <div className="App">
       <header className="App-header">
         {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <Grid draw={(ctx) => drawGrid(ctx, grid)} width={window.screen.width - 500} height={window.screen.height - 500} />
+        <Grid grid={grid} width={window.screen.width - 500} height={window.screen.height - 500} />
         <button onClick={() => setPlaying(!playing)}>{playing ? 'Stop' : 'Start'}</button>
         <button onClick={() => setGrid(startingGrid())}>Reset</button>
       </header>
