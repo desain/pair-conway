@@ -3,6 +3,11 @@ import React, { useEffect, useRef } from 'react';
 const CELL_SIZE = 100;
 const LINE_WIDTH = 1;
 
+export function getGridDimensions(width, height) {
+    const gridWidth = Math.floor(width / CELL_SIZE)
+    const gridHeight = Math.floor(height / CELL_SIZE)
+    return [gridWidth, gridHeight]
+}
 
 /**
  * Draws a grid (array of array of booleans) on the canvas.
@@ -12,8 +17,10 @@ function drawGrid(ctx, grid) {
     // draw grid lines
     ctx.strokeStyle = '#FFFFFF'
     ctx.lineWidth = LINE_WIDTH
-    const gridHeight = grid.length * CELL_SIZE
-    const gridWidth = grid[0].length * CELL_SIZE
+    const gridHeight = grid.length
+    const gridWidth = grid[0].length
+    const gridHeightPx = gridHeight * CELL_SIZE
+    const gridWidthPx = gridWidth * CELL_SIZE
     // horizontal
     for (let j = 0; j <= grid.length; j++) {
         ctx.beginPath()

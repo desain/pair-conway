@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import Grid from './Grid';
-
-const GRID_WIDTH = 10;
-const GRID_HEIGHT = 10;
+import Grid, { getGridDimensions } from './Grid';
 
 function countNeighbors(grid, i, j) {
   let count = 0
@@ -24,17 +21,22 @@ function countNeighbors(grid, i, j) {
   return count
 }
 
-function startingGrid() {
-  let grid = Array(GRID_HEIGHT);
-  for (let i = 0; i < GRID_HEIGHT; i++) {
-    grid[i] = Array(GRID_WIDTH).fill(false)
+function startingGrid(windowWidth, windowHeight) {
+  const [gridWidth, gridHeight] = getGridDimensions(windowWidth, windowHeight);
+
+  let grid = Array(gridHeight);
+  for (let i = 0; i < gridHeight; i++) {
+    grid[i] = Array(gridWidth).fill(false)
   }
   // Create glider in top left
-  grid[0][1] = true
-  grid[1][2] = true
-  grid[2][0] = true
-  grid[2][1] = true
-  grid[2][2] = true
+  if (gridWidth >= 3 && gridHeight >= 3) {
+    grid[0][1] = true
+    grid[1][2] = true
+    grid[2][0] = true
+    grid[2][1] = true
+    grid[2][2] = true
+  }
+
   return grid;
 }
 
@@ -62,20 +64,24 @@ function nextGrid(grid) {
 
 function App() {
   const [playing, setPlaying] = useState(true)
-  const [grid, setGrid] = useState(() => startingGrid())
+  const [grid, setGrid] = useState(() => startingGrid(window.innerWidth, window.innerHeight))
 
   useEffect(() => {
     const timer = setTimeout(() => playing && setGrid(nextGrid(grid)), 1e3)
     return () => clearTimeout(timer)
   }, [grid, playing])
 
+
   return (
     <div className="App">
       <header className="App-header">
         {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <Grid grid={grid} width={window.screen.width - 500} height={window.screen.height - 500} />
-        <button onClick={() => setPlaying(!playing)}>{playing ? 'Stop' : 'Start'}</button>
-        <button onClick={() => setGrid(startingGrid())}>Reset</button>
+        <Grid grid={grid} width={window.innerWidth} height={window.innerHeight} />
+        <div className="Buttons-container">
+          <button className="Control-button" onClick={() => setPlaying(!playing)}>{playing ? 'Stop' : 'Start'}</button>
+          <button className="Control-button" onClick={() => setGrid(startingGrid(window.innerWidth, window.innerHeight))}>Reset</button>
+        </div>
+
       </header>
     </div>
   );
