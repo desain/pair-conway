@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import Grid, { getGridDimensions } from './Grid';
 
+const MIN_SPEED_MS = 1;
+const MAX_SPEED_MS = 10;
+
 function countNeighbors(grid, i, j) {
   let count = 0
   for (let x = -1; x <= 1; x++) {
     for (let y = -1; y <= 1; y++) {
       if (x === 0 && y === 0) {
-        continue
+        continue // don't count self as a neighbor
       }
       const row = i + x
       const col = j + y
@@ -61,28 +64,44 @@ function nextGrid(grid) {
   return newGrid
 }
 
+function toggleCell(grid, i, j) {
+  const newGrid = [...grid]
+  newGrid[i][j] = !newGrid[i][j]
+  return newGrid
+}
+
 
 function App() {
   const [playing, setPlaying] = useState(true)
   const [grid, setGrid] = useState(() => startingGrid(window.innerWidth, window.innerHeight))
+  const [speed, setSpeed] = useState((MIN_SPEED_MS + MAX_SPEED_MS) / 2);
 
+  // Grid update interval
   useEffect(() => {
-    const timer = setTimeout(() => playing && setGrid(nextGrid(grid)), 1e3)
+    const timer = setTimeout(() => playing && setGrid(nextGrid(grid)), 1000 / speed)
     return () => clearTimeout(timer)
-  }, [grid, playing])
+  }, [grid, playing, speed])
 
 
   return (
     <div className="App">
-      <header className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <Grid grid={grid} width={window.innerWidth} height={window.innerHeight} />
-        <div className="Buttons-container">
-          <button className="Control-button" onClick={() => setPlaying(!playing)}>{playing ? 'Stop' : 'Start'}</button>
-          <button className="Control-button" onClick={() => setGrid(startingGrid(window.innerWidth, window.innerHeight))}>Reset</button>
-        </div>
-
-      </header>
+      <Grid
+        grid={grid}
+        width={window.innerWidth}
+        height={window.innerHeight}
+        toggleCell={(i, j) => setGrid(toggleCell(grid, i, j))}
+      />
+      <div className="Buttons-container">
+        <button onClick={() => setPlaying(!playing)}>{playing ? 'Stop' : 'Start'}</button>
+        <button onClick={() => setGrid(startingGrid(window.innerWidth, window.innerHeight))}>Reset</button>
+        <input type="range"
+          min={MIN_SPEED_MS}
+          max={MAX_SPEED_MS}
+          value={speed}
+          id="myRange"
+          onChange={(e) => setSpeed(e.target.value)}
+        />
+      </div>
     </div>
   );
 }

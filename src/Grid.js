@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 
 const CELL_SIZE = 100;
+const CELL_COLOR = '#000000';
 const LINE_WIDTH = 1;
+const LINE_COLOR = '#CCCCCC';
 
 export function getGridDimensions(width, height) {
     const gridWidth = Math.floor(width / CELL_SIZE)
@@ -15,7 +17,7 @@ export function getGridDimensions(width, height) {
 function drawGrid(ctx, grid) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     // draw grid lines
-    ctx.strokeStyle = '#FFFFFF'
+    ctx.strokeStyle = LINE_COLOR
     ctx.lineWidth = LINE_WIDTH
     const gridHeight = grid.length
     const gridWidth = grid[0].length
@@ -36,12 +38,11 @@ function drawGrid(ctx, grid) {
         ctx.stroke()
     }
 
-
     // draw cells
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
             if (grid[i][j]) {
-                ctx.fillStyle = '#000000'
+                ctx.fillStyle = CELL_COLOR
                 ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE)
             }
         }
@@ -49,8 +50,7 @@ function drawGrid(ctx, grid) {
 }
 
 const Grid = props => {
-
-    const { grid, ...rest } = props
+    const { grid, toggleCell, ...rest } = props
     const canvasRef = useRef(null)
 
     useEffect(() => {
@@ -59,7 +59,17 @@ const Grid = props => {
         drawGrid(context, grid)
     }, [grid])
 
-    return <canvas ref={canvasRef} {...rest} />
+    return <canvas
+        ref={canvasRef}
+        onClick={event => {
+            const rect = canvasRef.current.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+            const i = Math.floor(y / CELL_SIZE)
+            const j = Math.floor(x / CELL_SIZE)
+            toggleCell(i, j)
+        }}
+        {...rest} />
 }
 
 export default Grid
